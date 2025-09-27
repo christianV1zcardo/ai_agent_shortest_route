@@ -6,11 +6,18 @@ def calcular_ruta_y_long(G, origen_lat, origen_lon, destino_lat, destino_lon):
 
     Args:
         G (_type_): grafo
-        origen_lat (_type_): _description_
-        origen_lon (_type_): _description_
-        destino_lat (_type_): _description_
-        destino_lon (_type_): _description_
+        origen_lat (int,float): _description_
+        origen_lon (int,float): _description_
+        destino_lat (int,float): _description_
+        destino_lon (int,float): _description_
     """
+
+    # Se verifica que las coordenadas tengan el tipo correcto
+    args = [origen_lat, origen_lon, destino_lat, destino_lon]
+
+    if not all(isinstance(arg, float, int) for arg in args):
+        raise TypeError(f"Las coordenadas deben ser numéricas (float o int)")
+    
     
     # Obtiene los nodos más cercanos de las latitudes
     origen_node = ox.distance.nearest_nodes(G, origen_lon, origen_lat)
