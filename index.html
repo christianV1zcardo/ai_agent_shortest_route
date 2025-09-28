@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agente de Búsqueda de Ruta más Corta</title>
+    <meta charset="utf-8"/>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        #map { height: 90vh; width: 100%; }
+    </style>
+</head>
+
+<body>
+    <h2>Agente de Rutas - San Isidro</h2>
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Inicializar el mapa centrado de San Isidro
+        var map = L.map('map').setView([-12.100, -77.037], 15);
+
+        // Cargar capas de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Variables para guardar clicks
+        var origen = null;
+        var destino = null;
+        var polyline = null;
+
+        // Capturar clicks en el mapa
+        map.on('click', function(e) {
+            if (!origen) {
+                origen = e.latlng;
+                L.marker(origen).addTo(map).bindPopup("Origen").openPopup();
+            } else if (!destino) {
+                destino = e.latlng;
+                L.marker(destino).addTo(map).bindPopup("Destino").openPopup();
+
+                // Enviar coords al backend Flask
+                fetch('http://127.0.0.1:5000/route', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        origen: { lat: origen.lat, lon:origen.lng },
+                        destino: { lat: destino.lat, lon: destino.lng }
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Dibujar ruta con polilínea
+                    var latlngs = data.ruta.map(p => [p.lat, p.lon]);
+                    polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+                    map.fitBounds(polyline.getBounds());
+                    alert("Distancia: " + Math.round(data.distancia) + " metros")
+                })
+                .catch(err => console.error(err));
+            } else {
+                alert("Recarga la página para calcular otra ruta.")
+            }
+        });
+    </script>
+</body>
+</html>

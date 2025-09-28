@@ -2,8 +2,8 @@ import osmnx as ox
 import networkx as nx
 import sklearn
 
-from grafo import crear_grafo
-from ruta import calcular_ruta_y_long
+from agent.grafo import crear_grafo
+from agent.ruta import calcular_ruta_y_long
 
 place = "San Isidro, Lima, Peru"
 origen_lat, origen_lon = -12.10015, -77.05240
