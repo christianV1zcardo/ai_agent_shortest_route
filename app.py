@@ -1,5 +1,5 @@
 from agent.ruta import calcular_ruta_y_long
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import osmnx as ox
 
@@ -9,6 +9,11 @@ app = Flask(__name__)
 CORS(app)
 
 G = ox.load_graphml(filepath)
+
+@app.route("/")
+def home():
+    return render_template('index.html')
+
 
 @app.route("/route", methods=['POST'])
 def calcular_ruta():
